@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "Voice Coach",
+    "slug": "voice-coach",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "voice-coach",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1a1a2e"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Voice Coach needs microphone access to record your speaking practice sessions."
+      },
+      "bundleIdentifier": "com.anonymous.voicecoach"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#1a1a2e",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "RECORD_AUDIO"
+      ],
+      "package": "com.anonymous.voicecoach"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "./plugins/withWindowsGradleFix",
+      "expo-router",
+      "expo-file-system",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Voice Coach needs microphone access to record your speaking practice sessions."
+        }
+      ],
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Voice Coach needs microphone access to record your speaking practice.",
+          "speechRecognitionPermission": "Voice Coach needs speech recognition to transcribe your practice sessions.",
+          "androidSpeechServicePackages": ["com.google.android.tts"]
+        }
+      ]
+    ]
+  }
+}

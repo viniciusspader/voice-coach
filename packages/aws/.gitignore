@@ -1,0 +1,8 @@
+# CDK synthesized output — auto-generated, never commit
+cdk.out/
+
+# CDK context (may contain account/region bootstrap info)
+cdk.context.json
+
+# Dependencies
+node_modules/

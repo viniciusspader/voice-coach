@@ -1,0 +1,8 @@
+{
+  "name": "voice-coach",
+  "private": true,
+  "workspaces": [
+    "packages/shared",
+    "packages/aws"
+  ]
+}
