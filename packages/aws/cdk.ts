@@ -9,6 +9,36 @@ import * as sns from "aws-cdk-lib/aws-sns";
 import * as snsSubscriptions from "aws-cdk-lib/aws-sns-subscriptions";
 import { Construct } from "constructs";
 import * as path from "path";
+import { readFileSync } from "fs";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+
+// Load .env from the aws package directory
+try {
+  const envPath = resolve(dirname(fileURLToPath(import.meta.url)), ".env");
+  const lines = readFileSync(envPath, "utf8").split("\n");
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq === -1) continue;
+    const key = trimmed.slice(0, eq).trim();
+    const val = trimmed.slice(eq + 1).trim();
+    if (key && !(key in process.env)) process.env[key] = val;
+  }
+} catch {
+  // .env not present — fall through to env var validation below
+}
+
+const AWS_ACCOUNT_ID = process.env.AWS_ACCOUNT_ID;
+const ALERT_EMAIL = process.env.ALERT_EMAIL;
+
+if (!AWS_ACCOUNT_ID) {
+  throw new Error("Missing required environment variable: AWS_ACCOUNT_ID. Set it in packages/aws/.env or your shell.");
+}
+if (!ALERT_EMAIL) {
+  throw new Error("Missing required environment variable: ALERT_EMAIL. Set it in packages/aws/.env or your shell.");
+}
 
 class VoiceCoachStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -55,7 +85,7 @@ class VoiceCoachStack extends cdk.Stack {
       displayName: "Voice Coach Alerts",
     });
     alertTopic.addSubscription(
-      new snsSubscriptions.EmailSubscription("spader.vinicius@gmail.com")
+      new snsSubscriptions.EmailSubscription(ALERT_EMAIL)
     );
 
     // ── Lambda function ──
@@ -155,5 +185,5 @@ cdk.Tags.of(app).add("Environment", "prod");
 cdk.Tags.of(app).add("Owner", "vini");
 
 new VoiceCoachStack(app, "VoiceCoachStack", {
-  env: { account: "246848344354", region: "us-east-1" },
+  env: { account: AWS_ACCOUNT_ID, region: process.env.AWS_REGION ?? "us-east-1" },
 });
