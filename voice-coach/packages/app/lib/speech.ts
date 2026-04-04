@@ -34,6 +34,7 @@ export async function isOnDeviceAvailable(): Promise<boolean> {
  */
 export function startSpeechRecognition(options?: {
   onPartialResult?: (text: string) => void;
+  onSegmentComplete?: (accumulated: string) => void;
 }): Promise<TranscriptionResult> {
   return new Promise((resolve, reject) => {
     const segments: { text: string; t0: number; t1: number }[] = [];
@@ -62,19 +63,24 @@ export function startSpeechRecognition(options?: {
             t1: now - sessionStart,
           });
           segmentStart = now;
-          finalText = transcript;
+          finalText += (finalText ? " " : "") + transcript;
+          options?.onSegmentComplete?.(finalText);
         } else {
           options?.onPartialResult?.(transcript);
         }
       }
     );
 
+    function cleanup() {
+      resultSub.remove();
+      endSub.remove();
+      errorSub.remove();
+    }
+
     const endSub = ExpoSpeechRecognitionModule.addListener(
       "end",
       () => {
-        resultSub.remove();
-        endSub.remove();
-        errorSub.remove();
+        cleanup();
         resolve({ text: finalText, segments });
       }
     );
@@ -82,10 +88,14 @@ export function startSpeechRecognition(options?: {
     const errorSub = ExpoSpeechRecognitionModule.addListener(
       "error",
       (event: any) => {
-        resultSub.remove();
-        endSub.remove();
-        errorSub.remove();
-        reject(new Error(event.error || "Speech recognition failed"));
+        cleanup();
+        // "client" is Android's error code when stop() is called on a continuous session.
+        // If we have accumulated text, treat it as a normal end rather than a failure.
+        if (event.error === "client" && finalText) {
+          resolve({ text: finalText, segments });
+        } else {
+          reject(new Error(event.error || "Speech recognition failed"));
+        }
       }
     );
   });

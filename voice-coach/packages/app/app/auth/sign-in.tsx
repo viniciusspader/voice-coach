@@ -82,8 +82,16 @@ export default function SignInScreen() {
           )}
         </TouchableOpacity>
 
-        <Link href="/auth/sign-up" asChild>
+        <Link href="/auth/forgot-password" asChild>
           <TouchableOpacity style={styles.link}>
+            <Text style={styles.linkText}>
+              <Text style={styles.linkAccent}>Forgot password?</Text>
+            </Text>
+          </TouchableOpacity>
+        </Link>
+
+        <Link href="/auth/sign-up" asChild>
+          <TouchableOpacity style={styles.signUpLink}>
             <Text style={styles.linkText}>
               Don't have an account? <Text style={styles.linkAccent}>Sign up</Text>
             </Text>
@@ -144,6 +152,7 @@ const styles = StyleSheet.create({
   buttonDisabled: { opacity: 0.6 },
   buttonText: { color: "#fff", fontSize: 17, fontWeight: "700" },
   link: { alignItems: "center" },
+  signUpLink: { alignItems: "center", marginTop: 16 },
   linkText: { color: "#888", fontSize: 14 },
   linkAccent: { color: "#e94560", fontWeight: "600" },
 });

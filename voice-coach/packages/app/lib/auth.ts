@@ -56,6 +56,31 @@ export function confirmSignUp(email: string, code: string): Promise<void> {
   });
 }
 
+export function forgotPassword(email: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const user = new CognitoUser({ Username: email.toLowerCase(), Pool: userPool });
+    user.forgotPassword({
+      onSuccess: () => resolve(),
+      onFailure: reject,
+      inputVerificationCode: () => resolve(),
+    });
+  });
+}
+
+export function confirmForgotPassword(
+  email: string,
+  code: string,
+  newPassword: string
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const user = new CognitoUser({ Username: email.toLowerCase(), Pool: userPool });
+    user.confirmPassword(code.trim(), newPassword, {
+      onSuccess: () => resolve(),
+      onFailure: reject,
+    });
+  });
+}
+
 export function signOut(): void {
   userPool.getCurrentUser()?.signOut();
 }

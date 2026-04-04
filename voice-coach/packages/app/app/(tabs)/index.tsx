@@ -36,6 +36,7 @@ export default function PracticeScreen() {
   const [recordingTime, setRecordingTime] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [partialTranscript, setPartialTranscript] = useState("");
+  const [accumulatedTranscript, setAccumulatedTranscript] = useState("");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const speechPromiseRef = useRef<Promise<any> | null>(null);
 
@@ -65,12 +66,17 @@ export default function PracticeScreen() {
     setError(null);
     setRecordingTime(0);
     setPartialTranscript("");
+    setAccumulatedTranscript("");
 
     // Start audio recording (for duration tracking) and speech recognition in parallel
     await startRecording();
 
     speechPromiseRef.current = startSpeechRecognition({
       onPartialResult: setPartialTranscript,
+      onSegmentComplete: (accumulated) => {
+        setAccumulatedTranscript(accumulated);
+        setPartialTranscript("");
+      },
     });
 
     setPhase("recording");
@@ -207,21 +213,56 @@ export default function PracticeScreen() {
       )}
 
       {/* Recording Phase */}
-      {phase === "recording" && (
+      {phase === "recording" && (() => {
+        const target = prompt.timeLimitSeconds ?? 90;
+        const remaining = target - recordingTime;
+        const isOver = remaining < 0;
+        return (
         <View style={styles.recordingContainer}>
           <View style={styles.recordingDot} />
-          <Text style={styles.recordingTime}>{formatTime(recordingTime)}</Text>
+          <View style={styles.timerRow}>
+            <Text style={styles.recordingTime}>{formatTime(recordingTime)}</Text>
+            <Text style={[styles.countdown, isOver && styles.countdownOver]}>
+              {isOver ? `+${formatTime(-remaining)}` : `-${formatTime(remaining)}`}
+            </Text>
+          </View>
+
+          <View style={styles.progressRow}>
+            <View style={styles.progressTrack}>
+              <View
+                style={[
+                  styles.progressFill,
+                  {
+                    width: `${Math.min(100, (recordingTime / target) * 100)}%` as any,
+                    backgroundColor: isOver ? "#fb923c" : "#e94560",
+                  },
+                ]}
+              />
+            </View>
+            <Text style={styles.progressLabel}>
+              {isOver ? "Over target" : `Target: ${formatTime(target)}`}
+            </Text>
+          </View>
+
           <Text style={styles.promptTextSmall}>{prompt.text}</Text>
 
-          {partialTranscript ? (
-            <Text style={styles.liveTranscript}>{partialTranscript}</Text>
+          <View style={styles.tipCard}>
+            <Text style={styles.tipFramework}>{prompt.suggestedFramework}</Text>
+            <Text style={styles.tipText}>{prompt.tip}</Text>
+          </View>
+
+          {(accumulatedTranscript || partialTranscript) ? (
+            <Text style={styles.liveTranscript}>
+              {accumulatedTranscript}{accumulatedTranscript && partialTranscript ? " " : ""}{partialTranscript}
+            </Text>
           ) : null}
 
           <TouchableOpacity style={styles.stopButton} onPress={handleStopRecording}>
             <Text style={styles.stopButtonText}>Stop Recording</Text>
           </TouchableOpacity>
         </View>
-      )}
+        );
+      })()}
 
       {/* Processing Phase */}
       {phase === "processing" && (
@@ -307,7 +348,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#e94560",
     marginBottom: 16,
   },
-  recordingTime: { color: "#fff", fontSize: 48, fontWeight: "200", marginBottom: 24 },
+  timerRow: { flexDirection: "row", alignItems: "baseline", gap: 16, marginBottom: 24 },
+  recordingTime: { color: "#fff", fontSize: 48, fontWeight: "200" },
+  countdown: { color: "#888", fontSize: 22, fontWeight: "300" },
+  countdownOver: { color: "#fb923c" },
   promptTextSmall: { color: "#888", fontSize: 14, textAlign: "center", paddingHorizontal: 20, marginBottom: 40 },
   stopButton: {
     backgroundColor: "#16213e",
@@ -319,6 +363,11 @@ const styles = StyleSheet.create({
   },
   stopButtonText: { color: "#e94560", fontSize: 18, fontWeight: "700" },
   liveTranscript: { color: "#aaa", fontSize: 14, textAlign: "center", paddingHorizontal: 20, marginBottom: 24, fontStyle: "italic" },
+
+  progressRow: { width: "100%", paddingHorizontal: 20, marginBottom: 20 },
+  progressTrack: { height: 4, backgroundColor: "#16213e", borderRadius: 2, overflow: "hidden", marginBottom: 6 },
+  progressFill: { height: "100%", borderRadius: 2 },
+  progressLabel: { color: "#888", fontSize: 12, textAlign: "center" },
 
   // Processing
   processingContainer: { flex: 1, alignItems: "center", justifyContent: "center", paddingTop: 100 },
