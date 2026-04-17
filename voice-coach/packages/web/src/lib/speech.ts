@@ -14,7 +14,8 @@ interface SpeechCallbacks {
   onSegmentComplete: (accumulated: string) => void;
 }
 
-let recognition: SpeechRecognition | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let recognition: any = null;
 let stopRequested = false;
 
 export async function requestSpeechPermissions(): Promise<boolean> {
@@ -37,7 +38,7 @@ export function startSpeechRecognition(callbacks: SpeechCallbacks): Promise<Spee
       return;
     }
 
-    recognition = new SpeechRecognitionClass() as SpeechRecognition;
+    recognition = new SpeechRecognitionClass();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = "en-US";
@@ -47,7 +48,7 @@ export function startSpeechRecognition(callbacks: SpeechCallbacks): Promise<Spee
     let segmentStart = Date.now();
     stopRequested = false;
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: any) => {
       let interim = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
@@ -79,7 +80,7 @@ export function startSpeechRecognition(callbacks: SpeechCallbacks): Promise<Spee
       resolve({ text: accumulatedText, segments });
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event: any) => {
       if (event.error === "aborted" || event.error === "no-speech") {
         if (stopRequested) resolve({ text: accumulatedText, segments });
         return;
