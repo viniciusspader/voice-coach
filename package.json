@@ -2,7 +2,8 @@
   "name": "voice-coach",
   "private": true,
   "workspaces": [
-    "packages/shared",
-    "packages/aws"
+    "voice-coach/packages/shared",
+    "voice-coach/packages/aws",
+    "voice-coach/packages/web"
   ]
 }
