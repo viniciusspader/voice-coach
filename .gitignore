@@ -17,6 +17,7 @@ cdk.context.json
 
 # Logs
 *.log
+build-log.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

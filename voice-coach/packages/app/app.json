@@ -17,7 +17,7 @@
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Voice Coach needs microphone access to record your speaking practice sessions."
       },
-      "bundleIdentifier": "com.viniciuspaga.voicecoach"
+      "bundleIdentifier": "com.voicecoach.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -29,7 +29,7 @@
       "permissions": [
         "RECORD_AUDIO"
       ],
-      "package": "com.viniciuspaga.voicecoach"
+      "package": "com.voicecoach.app"
     },
     "web": {
       "favicon": "./assets/favicon.png",
