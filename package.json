@@ -5,5 +5,8 @@
     "voice-coach/packages/shared",
     "voice-coach/packages/aws",
     "voice-coach/packages/web"
-  ]
+  ],
+  "scripts": {
+    "vercel-build": "cd voice-coach/packages/web && npm run build"
+  }
 }

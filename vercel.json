@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "installCommand": "cd voice-coach/packages/web && npm install",
+  "buildCommand": "cd voice-coach/packages/web && npm run build",
+  "outputDirectory": "voice-coach/packages/web/.next"
+}
