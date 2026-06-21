@@ -6,10 +6,17 @@ node_modules/
 .env
 .env.local
 .env.*.local
+.env.vercel.check
 
 # Build outputs
 dist/
 build/
+.next/
+next-env.d.ts
+
+# Vercel
+.vercel
+.vercel/
 
 # CDK
 cdk.out/

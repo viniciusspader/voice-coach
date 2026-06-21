@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
 type Step = "register" | "confirm";
 
 export default function SignUpPage() {
   const { signUp, confirmSignUp, signIn } = useAuth();
+  const router = useRouter();
   const [step, setStep] = useState<Step>("register");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,6 +55,7 @@ export default function SignUpPage() {
     try {
       await confirmSignUp(email.trim(), code.trim());
       await signIn(email.trim(), password);
+      router.replace("/practice");
     } catch (err: any) {
       setError(err.message ?? "Verification failed. Please try again.");
     } finally {

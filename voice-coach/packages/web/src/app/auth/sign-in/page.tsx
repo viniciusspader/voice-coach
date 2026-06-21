@@ -14,7 +14,7 @@ export default function SignInPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && user) router.replace("/");
+    if (!isLoading && user) router.replace("/practice");
   }, [user, isLoading, router]);
 
   async function handleSignIn(e: React.FormEvent) {

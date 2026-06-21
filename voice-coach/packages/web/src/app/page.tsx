@@ -1,10 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Microphone, BookOpen, ChartLineUp, ArrowRight, Target, CurrencyEur } from "@phosphor-icons/react/dist/ssr";
+import { RedirectIfAuthed } from "@/components/RedirectIfAuthed";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#0d0d1a", color: "#f0f0f5" }}>
+      <RedirectIfAuthed />
       <style>{`
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(20px); }
